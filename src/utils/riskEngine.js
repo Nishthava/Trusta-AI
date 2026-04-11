@@ -49,7 +49,7 @@ export const calculateRisk = (txData, history = []) => {
     reasoning.push({ type: 'warning', message: 'Geographic anomaly: transaction originated from an unusual location' });
     flags.push('LOCATION_ANOMALY');
   } else {
-    reasoning.push({ type: 'success', message: 'Location is consistent with user's typical transaction zone' });
+    reasoning.push({ type: 'success', message: "Location is consistent with user's typical transaction zone" });
   }
 
   // ── Rule 5: Transaction Velocity ─────────────────────────────────────
