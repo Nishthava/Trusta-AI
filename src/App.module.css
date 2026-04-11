@@ -1,95 +1,165 @@
 .appWrapper {
-  max-width: 1200px;
+  max-width: 1560px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
 .header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 40px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-muted);
+  gap: 6px;
+  margin-bottom: 16px;
+  text-align: center;
+  animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.logo {
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logoGroup {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.pulseDot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent-emerald);
-  box-shadow: 0 0 15px var(--accent-emerald);
-  animation: pulseLogo 2s infinite ease-in-out;
+.fluidIcon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  animation: morph 6s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px rgba(15, 240, 252, 0.5);
 }
 
-@keyframes pulseLogo {
-  0% { transform: scale(0.9); opacity: 0.7; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.7; }
+@keyframes morph {
+  0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg); }
+  100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(360deg); }
 }
 
-.logo h1 {
-  font-size: 2rem;
-  letter-spacing: -0.05em;
-  font-weight: 700;
+.header h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
-.logo span {
-  color: var(--accent-emerald);
-  font-weight: 300;
+.header h1 span {
+  background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
+  color: var(--text-secondary);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-size: 0.95rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.mainGrid {
+.bentoGrid {
   display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 32px;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 28px;
 }
 
-.leftColumn {
+.bentoHeader {
+  grid-column: span 12;
+}
+
+.bentoLeft {
+  grid-column: span 5;
   display: flex;
   flex-direction: column;
 }
 
-.rightColumn {
+.bentoRight {
+  grid-column: span 7;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
-.logsWrapper {
-  height: 400px;
+.bentoLogs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bentoDecision {
+  display: flex;
+  flex-direction: column;
 }
 
 .waitingState {
-  padding: 40px;
+  padding: 80px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   font-family: var(--font-mono);
   color: var(--text-muted);
-  border: 1px dashed var(--border-muted);
+  border: 1px solid var(--border-glass);
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
 }
 
-@media (max-width: 900px) {
-  .mainGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+.auroraEffect {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(15, 240, 252, 0.1) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  animation: pulseWait 4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulseWait {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+.waitingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 2;
+}
+
+.ripplePulse {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--bg-glass);
+  border: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.ripplePulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.4);
+  animation: ripple 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+@media (max-width: 1024px) {
+  .bentoLeft, .bentoRight {
+    grid-column: span 12;
   }
 }

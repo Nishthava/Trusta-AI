@@ -5,112 +5,141 @@
   min-height: 250px;
   max-height: 400px;
   overflow: hidden;
-  background: var(--bg-surface);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+  background: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4), var(--shadow-bento);
+  border-radius: 24px;
+  position: relative;
+  transition: box-shadow var(--transition-normal);
+}
+
+.container:hover {
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4), var(--shadow-bento-hover);
+  border-color: var(--border-glass-light);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-muted);
-  background: rgba(0, 0, 0, 0.4);
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 2;
+  backdrop-filter: blur(15px);
 }
 
 .statusIndicator {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--accent-cyan);
+  gap: 12px;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  transition: text-shadow var(--transition-normal);
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--accent-cyan);
-  box-shadow: 0 0 8px var(--accent-cyan);
+  box-shadow: 0 0 15px var(--accent-cyan);
 }
 
 .pulsing {
-  animation: pulse 1s infinite alternate;
+  animation: pulseNeon 2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
 }
 
-@keyframes pulse {
-  0% { opacity: 0.3; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1.2); }
+@keyframes pulseNeon {
+  0% { transform: scale(0.85); box-shadow: 0 0 5px var(--accent-cyan); }
+  100% { transform: scale(1.15); box-shadow: 0 0 25px var(--accent-cyan); }
 }
 
 .systemInfo {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
+  letter-spacing: 0.05em;
 }
 
 .logsBox {
   flex: 1;
-  padding: 16px;
+  padding: 24px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  z-index: 2;
+  scroll-behavior: smooth;
 }
 
 .placeholder {
   color: var(--text-muted);
   font-style: italic;
+  animation: breathe 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  text-align: center;
+  margin-top: 40px;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
 }
 
 .logEntry {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform var(--transition-fast);
 }
 
-@keyframes fadeIn {
-  to { opacity: 1; }
+.logEntry:hover {
+  transform: translateX(4px);
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .timestamp {
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
   white-space: nowrap;
 }
 
-.info .message {
-  color: var(--text-primary);
+.message {
+  font-size: 1rem;
 }
 
-.success .message {
-  color: var(--status-success);
-}
-
-.warning .message {
-  color: var(--status-warning);
-}
-
-.danger .message {
-  color: var(--status-danger);
-}
+.info .message { color: var(--text-primary); text-shadow: 0 0 5px rgba(255, 255, 255, 0.15); }
+.success .message { color: var(--status-allow); text-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+.warning .message { color: var(--status-otp); text-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+.danger .message { color: var(--status-block); text-shadow: 0 0 10px rgba(255, 42, 42, 0.3); font-weight: 700; }
 
 .typingIndicator {
   color: var(--accent-cyan);
   display: flex;
-  gap: 2px;
-  padding: 4px 0;
+  gap: 8px;
+  padding: 12px 0;
+  text-shadow: 0 0 15px rgba(15, 240, 252, 0.4);
 }
 
 .typingIndicator span {
-  animation: bounce 1.4s infinite ease-in-out both;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-cyan);
+  border-radius: 50%;
+  animation: bounceDot 1.4s cubic-bezier(0.16, 1, 0.3, 1) infinite both;
 }
 
 .typingIndicator span:nth-child(1) { animation-delay: -0.32s; }
 .typingIndicator span:nth-child(2) { animation-delay: -0.16s; }
 
-@keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+@keyframes bounceDot {
+  0%, 80%, 100% { transform: scale(0); opacity: 0.2; }
+  40% { transform: scale(1.2); opacity: 1; }
 }

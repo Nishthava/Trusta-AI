@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TransactionForm from './components/TransactionForm';
 import AgentLogs from './components/AgentLogs';
 import RiskAnalysis from './components/RiskAnalysis';
+import DashboardStats from './components/DashboardStats';
 import { calculateRisk } from './utils/riskEngine';
 import styles from './App.module.css';
 
@@ -56,28 +57,36 @@ function App() {
   return (
     <div className={styles.appWrapper}>
       <header className={styles.header}>
-        <div className={styles.logo}>
-          <div className={styles.pulseDot}></div>
+        <div className={styles.logoGroup}>
+          <div className={styles.fluidIcon}></div>
           <h1>Trusta<span>Guard</span></h1>
         </div>
-        <div className={styles.subtitle}>Autonomous Fraud Prevention System</div>
+        <div className={styles.subtitle}>Fluid AI Fraud Prevention</div>
       </header>
 
-      <main className={styles.mainGrid}>
-        <div className={styles.leftColumn}>
+      <main className={styles.bentoGrid}>
+        <div className={styles.bentoHeader}>
+          <DashboardStats />
+        </div>
+
+        <div className={styles.bentoLeft}>
           <TransactionForm onSubmit={handleTransactionSubmit} disabled={isProcessing} />
         </div>
         
-        <div className={styles.rightColumn}>
-          <div className={styles.logsWrapper}>
+        <div className={styles.bentoRight}>
+          <div className={styles.bentoLogs}>
             <AgentLogs logs={logs} isThinking={isProcessing} />
           </div>
           
-          <div className={styles.decisionWrapper}>
+          <div className={styles.bentoDecision}>
             {decisionData && <RiskAnalysis decisionData={decisionData} />}
             {!decisionData && !isProcessing && (
               <div className={`glass-panel ${styles.waitingState}`}>
-                System ready. Awaiting transaction data...
+                <div className={styles.auroraEffect}></div>
+                <div className={styles.waitingContent}>
+                  <div className={styles.ripplePulse}></div>
+                  <span>System ready. Awaiting transaction data...</span>
+                </div>
               </div>
             )}
           </div>

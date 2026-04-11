@@ -4,12 +4,10 @@ import styles from './TransactionForm.module.css';
 const TransactionForm = ({ onSubmit, disabled }) => {
   const [formData, setFormData] = useState({
     amount: '',
-    senderUPI: 'saksham@okaxis',
+    senderUPI: 'user@okaxis',
     receiverUPI: '',
     isNewDevice: false,
-    isLocationChanged: false,
-    frequency: 'low',
-    isReceiverNew: false,
+    locationMatches: true,
   });
 
   const handleChange = (e) => {
@@ -22,15 +20,13 @@ const TransactionForm = ({ onSubmit, disabled }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.amount || !formData.receiverUPI) return;
     onSubmit(formData);
   };
 
   return (
     <div className={`glass-panel ${styles.formContainer}`}>
-      <h2 className={styles.title}>Transaction Input</h2>
-      <p className={styles.subtitle}>Initialize payment node</p>
-      
+      <h2 className={styles.title}>Initialize Transfer</h2>
+      <p className={styles.subtitle}>Secure Payment Node</p>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.inputGroup}>
           <label htmlFor="amount">Amount (₹)</label>
