@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrustaGuard AI — Fraud Prevention Dashboard</title>
+  <meta name="description" content="TrustaGuard AI: Real-time autonomous UPI fraud prevention and risk analysis dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #0a0a1a;
+      --card: #12122a;
+      --card-alt: #1a1040;
+      --card-left: linear-gradient(160deg, #1a0a3a 0%, #2a1060 100%);
+      --cyan: #00e5ff;
+      --cyan-dim: rgba(0,229,255,0.15);
+      --magenta: #ff00cc;
+      --green: #00e676;
+      --red: #ff1744;
+      --amber: #ff9100;
+      --blue: #448aff;
+      --btn-grad: linear-gradient(90deg, #00bcd4 0%, #7c4dff 100%);
+      --text: #ffffff;
+      --text-sec: #8888aa;
+      --border: rgba(255,255,255,0.08);
+      --glow: 0 0 16px rgba(0,229,255,0.18);
+      --glow-hover: 0 0 30px rgba(0,229,255,0.3);
+      --radius: 16px;
+      --font: 'Space Grotesk', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Aurora background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(124,77,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(0,229,255,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 60% 80%, rgba(255,0,204,0.07) 0%, transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .page { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 20px 28px 40px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.25); border-radius: 4px; }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      background: rgba(18,18,42,0.7);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--glow);
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    .logo-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--magenta);
+      box-shadow: 0 0 12px var(--magenta);
+      animation: pulseMagenta 2s ease-in-out infinite alternate;
+      flex-shrink: 0;
+    }
+    @keyframes pulseMagenta {
+      0% { box-shadow: 0 0 8px var(--magenta); }
+      100% { box-shadow: 0 0 24px var(--magenta), 0 0 40px rgba(255,0,204,0.3); }
+    }
+
+    .header-brand { display: flex; flex-direction: column; gap: 2px; }
+    .brand-title { font-size: 1.15rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .brand-title span { color: var(--cyan); }
+    .brand-subtitle { font-size: 0.8rem; color: var(--text-sec); font-family: var(--mono); }
+
+    .threat-badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px;
+      background: rgba(255,23,68,0.1);
+      border: 1px solid rgba(255,23,68,0.35);
+      border-radius: 50px;
+      color: var(--red);
+      font-size: 0.88rem;
+      font-weight: 600;
+      animation: pulseRed 2.5s ease-in-out infinite;
+    }
+    .threat-badge .bell { font-size: 1rem; }
+    @keyframes pulseRed {
+      0%, 100% { box-shadow: 0 0 8px rgba(255,23,68,0.2); }
+      50% { box-shadow: 0 0 20px rgba(255,23,68,0.4); }
+    }
+
+    /* ── Stat Bar ── */
+    .stat-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: transform var(--transition), box-shadow var(--transition);
+      cursor: default;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--glow-hover); border-color: rgba(0,229,255,0.3); }
+
+    /* Donut */
+    .donut-wrap { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .donut-wrap svg { transform: rotate(-90deg); }
+    .donut-bg { fill: none; stroke: rgba(255,145,0,0.15); stroke-width: 7; }
+    .donut-fill { fill: none; stroke: var(--amber); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 188; stroke-dashoffset: 109; transition: stroke-dashoffset 1.5s ease; }
+    .donut-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+    .donut-val { font-family: var(--mono); font-size: 0.95rem; font-weight: 700; color: var(--amber); line-height: 1; }
+    .donut-max { font-size: 0.6rem; color: var(--text-sec); }
+
+    .stat-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .stat-label { font-family: var(--mono); font-size: 0.72rem; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.1em; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; line-height: 1.1; }
+    .stat-value.amber { color: var(--magenta); }
+    .stat-value.green { color: var(--green); }
+    .stat-badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 600; font-family: var(--mono);
+      width: fit-content;
+    }
+    .stat-badge.amber { background: rgba(255,145,0,0.12); color: var(--amber); border: 1px solid rgba(255,145,0,0.3); }
+    .stat-badge.green { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.25); }
+    .stat-sub { font-size: 0.78rem; color: var(--text-sec); }
+
+    /* Sparkbar */
+    .sparkbar { display: flex; align-items: flex-end; gap: 2px; height: 28px; margin-top: 4px; }
+    .sparkbar span { width: 6px; border-radius: 2px 2px 0 0; transition: height 0.3s; }
+
+    /* ── Main Layout ── */
+    .main-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 20px; align-items: start; }
+
+    /* ── Card Base ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--glow); }
+
+    /* ── Left Panel ── */
+    .left-panel {
+      background: var(--card-left);
+      border: 1px solid rgba(124,77,255,0.25);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      box-shadow: 0 0 30px rgba(124,77,255,0.1);
+      transition: box-shadow var(--transition);
+    }
+    .left-panel:hover { box-shadow: 0 0 50px rgba(124,77,255,0.18); }
+
+    .panel-title { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+    .panel-subtitle { font-family: var(--mono); font-size: 0.72rem; color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
+
+    /* Form */
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 0.82rem; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .form-input {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      width: 100%;
+    }
+    .form-input::placeholder { color: var(--text-sec); }
+    .form-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); }
+
+    .form-hint { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-sec); }
+    .hint-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .hint-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .hint-dot.amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+    .hint-text.green { color: var(--green); }
+    .hint-text.amber { color: var(--amber); }
+
+    /* Pill tags */
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 5px 14px; border-radius: 50px; font-size: 0.76rem; font-weight: 600;
+      font-family: var(--mono); letter-spacing: 0.04em;
+    }
+    .pill.cyan { background: rgba(0,229,255,0.12); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
+    .pill.green { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.25); }
+
+    /* Checkboxes */
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+    .checkbox-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .checkbox-row input[type="checkbox"] { display: none; }
+    .custom-check {
+      width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid rgba(0,229,255,0.4);
+      background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all var(--transition);
+    }
+    .checkbox-row input:checked + .custom-check { background: var(--cyan); border-color: var(--cyan); }
+    .checkbox-row input:checked + .custom-check::after { content: '✓'; color: #0a0a1a; font-size: 0.75rem; font-weight: 700; }
+    .checkbox-label { font-size: 0.9rem; color: var(--text-sec); }
+
+    select.form-input { cursor: pointer; }
+    select.form-input option { background: #1a0a3a; }
+
+    /* Button */
+    .btn-initiate {
+      width: 100%; padding: 16px; border-radius: 12px; border: none; cursor: pointer;
+      background: var(--btn-grad); color: #fff; font-family: var(--font);
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      transition: all var(--transition); position: relative; overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,188,212,0.3);
+      margin-top: 6px;
+    }
+    .btn-initiate::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, #7c4dff, #00bcd4);
+      opacity: 0; transition: opacity var(--transition);
+    }
+    .btn-initiate:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,188,212,0.5); }
+    .btn-initiate:hover::before { opacity: 1; }
+    .btn-initiate:active { transform: translateY(0); }
+    .btn-initiate span { position: relative; z-index: 1; }
+
+    /* ── Right panel ── */
+    .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; border-bottom: 1px solid var(--border);
+    }
+    .card-header-left { display: flex; align-items: center; gap: 10px; }
+    .active-dot {
+      width: 10px; height: 10px; border-radius: 50%; background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulseCyan 1.8s ease-in-out infinite;
+    }
+    @keyframes pulseCyan {
+      0%, 100% { box-shadow: 0 0 6px var(--cyan); transform: scale(1); }
+      50% { box-shadow: 0 0 20px var(--cyan), 0 0 36px rgba(0,229,255,0.3); transform: scale(1.15); }
+    }
+    .card-head-title { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+    .card-head-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--text-sec); }
+    .live-badge {
+      padding: 4px 12px; border-radius: 20px;
+      background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3);
+      color: var(--cyan); font-size: 0.7rem; font-weight: 700; font-family: var(--mono);
+      letter-spacing: 0.1em;
+    }
+
+    /* Timeline */
+    .timeline { padding: 18px 22px; display: flex; flex-direction: column; gap: 0; }
+    .tl-entry { display: flex; gap: 14px; position: relative; padding-bottom: 18px; }
+    .tl-entry:last-child { padding-bottom: 0; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; }
+    .tl-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+    .tl-dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .tl-dot.red { background: var(--red); box-shadow: 0 0 8px var(--red); }
+    .tl-dot.amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+    .tl-dot.cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+    .tl-line { width: 1px; flex: 1; background: var(--border); margin-top: 4px; }
+    .tl-entry:last-child .tl-line { display: none; }
+    .tl-content { flex: 1; }
+    .tl-agent { font-family: var(--mono); font-size: 0.7rem; color: var(--cyan); font-weight: 600; }
+    .tl-msg { font-size: 0.88rem; color: var(--text); margin: 2px 0; font-weight: 500; }
+    .tl-time { font-size: 0.72rem; color: var(--text-sec); }
+
+    /* ── Decision Card ── */
+    .decision-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: none;
+      animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .decision-card.visible { display: block; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .decision-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+    .decision-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+
+    .status-allow-pill {
+      display: flex; align-items: center; justify-content: center;
+      padding: 14px 24px; border-radius: 50px;
+      background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.3);
+      color: var(--green); font-family: var(--mono); font-size: 1.3rem; font-weight: 700;
+      letter-spacing: 0.12em; box-shadow: 0 0 24px rgba(0,230,118,0.12);
+    }
+
+    /* Risk bar */
+    .risk-section { display: flex; flex-direction: column; gap: 8px; }
+    .risk-header { display: flex; justify-content: space-between; font-size: 0.8rem; }
+    .risk-label { color: var(--text-sec); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; }
+    .risk-score { color: var(--text); font-weight: 700; font-family: var(--mono); }
+    .risk-track { height: 10px; background: rgba(0,0,0,0.5); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+    .risk-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--green), rgba(0,230,118,0.8)); width: 0; transition: width 1.2s cubic-bezier(0.16,1,0.3,1); }
+
+    /* Factor rows */
+    .factors { display: flex; flex-direction: column; gap: 10px; }
+    .factor-row { display: flex; align-items: center; gap: 10px; }
+    .factor-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .factor-dot.green { background: var(--green); }
+    .factor-dot.red { background: var(--red); }
+    .factor-text { flex: 1; font-size: 0.82rem; color: var(--text-sec); }
+    .factor-badge {
+      padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; font-family: var(--mono);
+    }
+    .factor-badge.pass { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.25); }
+    .factor-badge.warn { background: rgba(255,145,0,0.1); color: var(--amber); border: 1px solid rgba(255,145,0,0.3); }
+
+    /* Threat breakdown */
+    .breakdown-title { font-family: var(--mono); font-size: 0.72rem; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+    .breakdown-rows { display: flex; flex-direction: column; gap: 8px; }
+    .breakdown-row { display: flex; align-items: center; gap: 10px; }
+    .breakdown-label { font-size: 0.78rem; color: var(--text-sec); width: 160px; flex-shrink: 0; }
+    .breakdown-track { flex: 1; height: 7px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+    .breakdown-fill { height: 100%; border-radius: 4px; width: 0; transition: width 1.4s cubic-bezier(0.16,1,0.3,1); }
+    .breakdown-fill.red { background: var(--red); }
+    .breakdown-fill.amber { background: var(--amber); }
+    .breakdown-fill.cyan { background: var(--cyan); }
+    .breakdown-val { font-family: var(--mono); font-size: 0.75rem; font-weight: 600; width: 18px; text-align: right; }
+    .breakdown-val.red { color: var(--red); }
+    .breakdown-val.amber { color: var(--amber); }
+    .breakdown-val.cyan { color: var(--cyan); }
+
+    /* waiting state */
+    .decision-waiting {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 40px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; text-align: center; transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .decision-waiting:hover { transform: translateY(-3px); box-shadow: var(--glow); }
+    .waiting-ring {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 2px solid rgba(0,229,255,0.2); border-top-color: var(--cyan);
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .waiting-text { font-family: var(--mono); font-size: 0.8rem; color: var(--text-sec); }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .page { padding: 14px 16px 30px; gap: 14px; }
+      .stat-bar { grid-template-columns: 1fr; }
+      .header { flex-direction: column; gap: 14px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ HEADER ══ -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-dot"></div>
+      <div class="header-brand">
+        <div class="brand-title"><span>TrustaGuard AI:</span> Fraud Prevention</div>
+        <div class="brand-subtitle">Good Morning, Sarah J. — Session Active</div>
+      </div>
+    </div>
+    <div class="threat-badge">
+      <span class="bell">🔔</span> 14 Active Threats
+    </div>
+  </header>
+
+  <!-- ══ STAT BAR ══ -->
+  <div class="stat-bar">
+
+    <!-- Risk Level -->
+    <div class="stat-card">
+      <div class="donut-wrap">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle class="donut-bg" cx="36" cy="36" r="30" />
+          <circle class="donut-fill" cx="36" cy="36" r="30" />
+        </svg>
+        <div class="donut-label">
+          <span class="donut-val">42</span>
+          <span class="donut-max">/100</span>
+        </div>
+      </div>
+      <div class="stat-info">
+        <div class="stat-label">Risk Level</div>
+        <div class="stat-value amber">Medium</div>
+        <div class="stat-badge amber">+3 pts today</div>
+        <div class="stat-sub">Elevated caution zone</div>
+      </div>
+    </div>
+
+    <!-- Agent Logs -->
+    <div class="stat-card">
+      <div class="stat-info">
+        <div class="stat-label">Live AI Agent Logs</div>
+        <div class="stat-value" style="color:var(--text)">103 <span style="font-size:1rem; color:var(--text-sec); font-weight:500">Agents Active</span></div>
+        <div class="sparkbar" id="spark-agents">
+          <!-- filled by JS -->
+        </div>
+        <div class="stat-sub">All systems nominal</div>
+      </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="stat-card">
+      <div class="stat-info">
+        <div class="stat-label">Transactions Scanned</div>
+        <div class="stat-value" id="tx-count">45,678</div>
+        <div class="stat-badge green">+15% Today</div>
+        <div class="sparkbar" id="spark-tx"></div>
+        <div class="stat-sub" style="color:var(--green); font-size:0.75rem">98.4% Secure</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ MAIN GRID ══ -->
+  <div class="main-grid">
+
+    <!-- ── LEFT: Initialize Transfer ── -->
+    <div class="left-panel">
+      <div>
+        <div class="panel-title">Initialize Transfer</div>
+        <div class="panel-subtitle">⬡ SECURE PAYMENT NODE · UPI GATEWAY v3</div>
+      </div>
+
+      <!-- Amount -->
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input class="form-input" id="amount" type="number" placeholder="Enter transfer amount" value="5500" />
+        <div class="form-hint">
+          <span class="hint-dot green"></span>
+          <span class="hint-text green">Within daily limit (₹50,000 remaining)</span>
+        </div>
+      </div>
+
+      <!-- Receiver UPI -->
+      <div class="form-group">
+        <label class="form-label">Receiver UPI ID</label>
+        <input class="form-input" id="upi" type="text" placeholder="receiver@upi" value="unknown@okicici" />
+        <div class="form-hint">
+          <span class="hint-dot amber"></span>
+          <span class="hint-text amber">Not in saved contacts — verify before sending</span>
+        </div>
+      </div>
+
+      <!-- Context pills -->
+      <div class="form-group">
+        <label class="form-label">Context Indicators</label>
+        <div class="pill-row">
+          <span class="pill cyan">New Receiver</span>
+          <span class="pill green">Trusted Device</span>
+          <span class="pill green">Home Location</span>
+          <span class="pill green">Low Velocity</span>
+        </div>
+      </div>
+
+      <!-- Checkboxes -->
+      <div class="form-group">
+        <label class="form-label">Risk Parameters</label>
+        <div class="checkbox-group">
+          <label class="checkbox-row">
+            <input type="checkbox" id="chk-new-receiver" checked />
+            <div class="custom-check"></div>
+            <span class="checkbox-label">New Receiver (not in contacts)</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="chk-new-device" />
+            <div class="custom-check"></div>
+            <span class="checkbox-label">New/Unregistered Device</span>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="chk-location" />
+            <div class="custom-check"></div>
+            <span class="checkbox-label">Location Changed (geo anomaly)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Frequency -->
+      <div class="form-group">
+        <label class="form-label">Transaction Frequency</label>
+        <select class="form-input" id="frequency">
+          <option value="low" selected>Low (1–2 today)</option>
+          <option value="medium">Medium (3–5 today)</option>
+          <option value="high">High (&gt;5 today — caution)</option>
+        </select>
+      </div>
+
+      <button class="btn-initiate" onclick="initiate()"><span>⟐ INITIATE TRANSFER</span></button>
+    </div>
+
+    <!-- ── RIGHT ── -->
+    <div class="right-col">
+
+      <!-- Agent Timeline -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-header-left">
+            <div class="active-dot"></div>
+            <div>
+              <div class="card-head-title">AGENT_IDLE</div>
+              <div class="card-head-sub">SYS_SEC_v2.4 · Monitoring</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span class="card-head-sub" style="margin-right:4px">SYS_SEC_v2.4</span>
+            <span class="live-badge">● LIVE</span>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="tl-entry">
+            <div class="tl-left">
+              <div class="tl-dot green"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-agent">AGT-04</div>
+              <div class="tl-msg">Cleared ₹5,500 — risk score: 12 · ALLOW</div>
+              <div class="tl-time">2s ago</div>
+            </div>
+          </div>
+          <div class="tl-entry">
+            <div class="tl-left">
+              <div class="tl-dot red"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-agent">AGT-11</div>
+              <div class="tl-msg">Flagged unknown UPI — receiver unverified</div>
+              <div class="tl-time">14s ago</div>
+            </div>
+          </div>
+          <div class="tl-entry">
+            <div class="tl-left">
+              <div class="tl-dot amber"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-agent">AGT-07</div>
+              <div class="tl-msg">Escalated ₹92,000 — critical amount threshold</div>
+              <div class="tl-time">1m ago</div>
+            </div>
+          </div>
+          <div class="tl-entry">
+            <div class="tl-left">
+              <div class="tl-dot cyan"></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-agent">AGT-02</div>
+              <div class="tl-msg">Verified device fingerprint — registered device confirmed</div>
+              <div class="tl-time">3m ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decision Card -->
+      <div class="decision-card" id="decision-card">
+        <div class="card-header" style="background:rgba(0,230,118,0.04); border-bottom-color:rgba(0,230,118,0.15);">
+          <div class="card-header-left">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);"></div>
+            <div class="card-head-title">Final Decision Output</div>
+          </div>
+          <div class="card-head-sub" id="decision-time"></div>
+        </div>
+        <div class="decision-body">
+          <div class="status-allow-pill" id="status-pill">✦ STATUS: ALLOW</div>
+
+          <div class="risk-section">
+            <div class="risk-header">
+              <span class="risk-label">Threat Risk Index</span>
+              <span class="risk-score" id="risk-score-label">30 / 100</span>
+            </div>
+            <div class="risk-track">
+              <div class="risk-fill" id="risk-fill"></div>
+            </div>
+          </div>
+
+          <div class="factors">
+            <div class="factor-row">
+              <div class="factor-dot green"></div>
+              <div class="factor-text">Amount ₹5,500 within safe limits</div>
+              <div class="factor-badge pass">Pass</div>
+            </div>
+            <div class="factor-row">
+              <div class="factor-dot red"></div>
+              <div class="factor-text">Receiver UPI not in trusted contacts</div>
+              <div class="factor-badge warn">Warn</div>
+            </div>
+            <div class="factor-row">
+              <div class="factor-dot green"></div>
+              <div class="factor-text">Device fingerprint matched — registered</div>
+              <div class="factor-badge pass">Pass</div>
+            </div>
+            <div class="factor-row">
+              <div class="factor-dot green"></div>
+              <div class="factor-text">Location consistent with user history</div>
+              <div class="factor-badge pass">Pass</div>
+            </div>
+            <div class="factor-row">
+              <div class="factor-dot green"></div>
+              <div class="factor-text">Transaction velocity normal — low frequency</div>
+              <div class="factor-badge pass">Pass</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="breakdown-title">Threat Category Breakdown</div>
+            <div class="breakdown-rows" style="margin-top:10px">
+              <div class="breakdown-row">
+                <div class="breakdown-label">Velocity anomaly</div>
+                <div class="breakdown-track"><div class="breakdown-fill red" data-width="60"></div></div>
+                <div class="breakdown-val red">6</div>
+              </div>
+              <div class="breakdown-row">
+                <div class="breakdown-label">New receiver pattern</div>
+                <div class="breakdown-track"><div class="breakdown-fill amber" data-width="40"></div></div>
+                <div class="breakdown-val amber">4</div>
+              </div>
+              <div class="breakdown-row">
+                <div class="breakdown-label">Location mismatch</div>
+                <div class="breakdown-track"><div class="breakdown-fill amber" data-width="30"></div></div>
+                <div class="breakdown-val amber">3</div>
+              </div>
+              <div class="breakdown-row">
+                <div class="breakdown-label">Large amount flag</div>
+                <div class="breakdown-track"><div class="breakdown-fill cyan" data-width="10"></div></div>
+                <div class="breakdown-val cyan">1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waiting state -->
+      <div class="decision-waiting" id="decision-waiting">
+        <div class="waiting-ring"></div>
+        <div class="waiting-text">System ready — awaiting transfer initiation...</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Sparkbar Generator ── */
+  function buildSpark(id, color, heights) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = heights.map(h =>
+      `<span style="height:${h}px;background:${color};opacity:${0.4 + h/40}"></span>`
+    ).join('');
+  }
+
+  buildSpark('spark-agents', '#00e676', [8,14,10,18,12,22,16,24,20,28,18,26,22,28,24]);
+  buildSpark('spark-tx',     '#448aff', [10,16,12,20,14,18,22,16,26,20,24,28,22,26,28]);
+
+  /* ── Live TX counter ── */
+  let txVal = 45678;
+  setInterval(() => {
+    txVal += Math.floor(Math.random() * 4);
+    document.getElementById('tx-count').textContent = txVal.toLocaleString();
+  }, 2000);
+
+  /* ── Initiate ── */
+  function initiate() {
+    const btn = document.querySelector('.btn-initiate');
+    btn.style.opacity = '0.7';
+    btn.style.pointerEvents = 'none';
+    btn.querySelector('span').textContent = '⟳ ANALYZING...';
+
+    setTimeout(() => {
+      // Show decision
+      document.getElementById('decision-waiting').style.display = 'none';
+      const card = document.getElementById('decision-card');
+      card.classList.add('visible');
+
+      // Set time
+      document.getElementById('decision-time').textContent =
+        new Date().toLocaleTimeString('en-US', { hour12: false });
+
+      // Animate bars
+      setTimeout(() => {
+        document.getElementById('risk-fill').style.width = '30%';
+        document.querySelectorAll('.breakdown-fill').forEach(el => {
+          el.style.width = el.dataset.width + '%';
+        });
+      }, 100);
+
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+      btn.querySelector('span').textContent = '⟐ INITIATE TRANSFER';
+    }, 1800);
+  }
+</script>
+</body>
+</html>

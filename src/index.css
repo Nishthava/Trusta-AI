@@ -1,39 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --font-body: 'Outfit', 'Inter', sans-serif;
+  --font-body: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Core Palette: Deep Space Aurora */
-  --bg-base: #02000d;
-  --bg-glass: rgba(255, 255, 255, 0.03);
-  --bg-glass-hover: rgba(255, 255, 255, 0.06);
-  --bg-card: rgba(16, 14, 30, 0.4);
-  --bg-input: rgba(0, 0, 0, 0.5);
+  /* Core Palette — Dark Navy matching HTML */
+  --bg-base: #0a0a1a;
+  --bg-glass: rgba(18, 18, 42, 0.7);
+  --bg-glass-hover: rgba(18, 18, 42, 0.9);
+  --bg-card: #12122a;
+  --bg-input: rgba(0, 0, 0, 0.4);
 
-  /* Border: Frosted Glass Edges */
-  --border-glass: rgba(255, 255, 255, 0.1);
-  --border-glass-light: rgba(255, 255, 255, 0.2);
+  /* Border */
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-light: rgba(255, 255, 255, 0.15);
 
   /* Text */
   --text-primary: #ffffff;
-  --text-secondary: #a1a1aa;
-  --text-muted: #52525b;
+  --text-secondary: #8888aa;
+  --text-muted: #55557a;
 
-  /* Accent Colors: Majestic Neons */
-  --accent-cyan: #0ff0fc;
-  --accent-pink: #f42cbf;
-  --accent-purple: #8b5cf6;
+  /* Accents */
+  --accent-cyan: #00e5ff;
+  --accent-magenta: #ff00cc;
+  --accent-purple: #7c4dff;
 
-  /* Status Colors */
-  --status-allow: #10b981;
-  --status-otp: #f59e0b;
-  --status-block: #ff2a2a;
+  /* Status */
+  --status-allow: #00e676;
+  --status-otp: #ff9100;
+  --status-block: #ff1744;
 
   /* Shadows */
-  --shadow-bento: 0 15px 40px rgba(0, 0, 0, 0.6);
-  --shadow-bento-hover: 0 20px 50px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 30px rgba(255, 255, 255, 0.05);
+  --shadow-bento: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-bento-hover: 0 0 30px rgba(0,229,255,0.18);
+  --shadow-glow: 0 0 16px rgba(0,229,255,0.12);
 
   /* Animations */
   --transition-fast: 300ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -74,9 +74,11 @@ body::before, body::after {
 }
 
 body::before {
-  background: radial-gradient(circle at 30% 70%, rgba(244, 44, 191, 0.15) 0%, transparent 60%),
-              radial-gradient(circle at 70% 30%, rgba(15, 240, 252, 0.15) 0%, transparent 60%);
-  filter: blur(140px);
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(124,77,255,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(0,229,255,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 80%, rgba(255,0,204,0.07) 0%, transparent 50%);
+  filter: blur(60px);
   animation: auroraFlow 25s ease-in-out infinite alternate;
 }
 

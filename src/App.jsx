@@ -19,24 +19,19 @@ function App() {
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
   const handleTransactionSubmit = async (formData) => {
-    // Reset state
     setLogs([]);
     setDecisionData(null);
     setIsProcessing(true);
 
-    // Phase 1: Observe
     addLog(`INITIALIZING AGENT TRIDENT...`, 'info');
     await delay(600);
     addLog(`Intercepted transaction request from ${formData.senderUPI} to ${formData.receiverUPI}.`, 'info');
     await delay(1000);
-    
-    // Phase 2: Think / Analyze
     addLog(`Analyzing transaction parameters...`, 'info');
     await delay(800);
 
     const result = calculateRisk(formData);
 
-    // Simulate stepping through rules
     for (const logic of result.reasoning) {
       addLog(`Evaluating parameter: ${logic.message}`, logic.type === 'danger' ? 'danger' : 'info');
       await delay(900);
@@ -45,82 +40,59 @@ function App() {
     addLog(`Computation complete. Risk index generated.`, 'success');
     await delay(500);
 
-    // Phase 3: Decide & Act
     setDecisionData({
       riskScore: result.riskScore,
       decision: result.decision,
-      reasoning: result.reasoning
+      reasoning: result.reasoning,
+      flags: result.flags,
     });
     setIsProcessing(false);
   };
 
   return (
     <div className={styles.appWrapper}>
-      {/* Sidebar */}
-      <aside className={`glass-panel ${styles.sidebar}`}>
-        <div className={styles.logoGroup}>
-          <div className={styles.fluidIcon}></div>
-          <h2>TrustaGuard</h2>
-        </div>
-        
-        <nav className={styles.navMenu}>
-          <a href="#" className={styles.activeNavItem}>
-            <span className={styles.navIcon}>⊞</span> Dashboard
-          </a>
-          <a href="#">
-            <span className={styles.navIcon}>💳</span> Transactions
-          </a>
-          <a href="#">
-            <span className={styles.navIcon}>📋</span> Live Logs
-          </a>
-          <a href="#">
-            <span className={styles.navIcon}>📈</span> Analytics
-          </a>
-          <a href="#" className={styles.settingsLink}>
-            <span className={styles.navIcon}>⚙️</span> Settings
-          </a>
-        </nav>
-      </aside>
 
-      <main className={styles.mainContent}>
-        {/* Top Header */}
-        <header className={styles.topHeader}>
-          <div className={styles.headerTitle}>
-            <h1>TrustaGuard AI: <span>Fraud Prevention</span> | <span className={styles.greeting}>Good Morning, Sarah J.</span></h1>
-          </div>
-          <div className={`glass-panel ${styles.threatBadge}`}>
-            <span className={styles.threatIcon}>🔔</span> 14 Active Threats
-          </div>
-        </header>
-
-        <div className={styles.bentoGrid}>
-          <div className={styles.bentoHeader}>
-            <DashboardStats />
-          </div>
-
-          <div className={styles.bentoLeft}>
-            <TransactionForm onSubmit={handleTransactionSubmit} disabled={isProcessing} />
-          </div>
-          
-          <div className={styles.bentoRight}>
-            <div className={styles.bentoLogs}>
-              <AgentLogs logs={logs} isThinking={isProcessing} />
+      {/* ── Header ── */}
+      <header className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.logoDot}></div>
+          <div className={styles.headerBrand}>
+            <div className={styles.brandTitle}>
+              <span>TrustaGuard AI:</span> Fraud Prevention
             </div>
-            
-            <div className={styles.bentoDecision}>
-              {decisionData && <RiskAnalysis decisionData={decisionData} />}
-              {!decisionData && !isProcessing && (
-                <div className={`glass-panel ${styles.waitingState}`}>
-                  <div className={styles.auroraEffect}></div>
-                  <div className={styles.waitingContent}>
-                     <div className={styles.ripplePulse}></div>
-                     <span>System ready. Awaiting transaction data...</span>
-                  </div>
-                </div>
-              )}
-            </div>
+            <div className={styles.brandSub}>Good Morning, Sarah J. — Session Active</div>
           </div>
         </div>
+        <div className={styles.threatBadge}>
+          <span>🔔</span> 14 Active Threats
+        </div>
+      </header>
+
+      {/* ── Stats Bar ── */}
+      <DashboardStats />
+
+      {/* ── Main Grid ── */}
+      <main className={styles.mainGrid}>
+
+        {/* Left: Transaction Form — untouched */}
+        <div className={styles.leftPanel}>
+          <TransactionForm onSubmit={handleTransactionSubmit} disabled={isProcessing} />
+        </div>
+
+        {/* Right: Agent Logs + Decision */}
+        <div className={styles.rightCol}>
+          <AgentLogs logs={logs} isThinking={isProcessing} />
+
+          {decisionData ? (
+            <RiskAnalysis decisionData={decisionData} />
+          ) : (
+            <div className={styles.waitingCard}>
+              <div className={styles.waitingRing}></div>
+              <span className={styles.waitingText}>System ready — awaiting transfer initiation...</span>
+            </div>
+          )}
+        </div>
+
       </main>
     </div>
   );
