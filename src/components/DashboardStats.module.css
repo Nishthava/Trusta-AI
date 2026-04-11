@@ -1,7 +1,7 @@
 .dashboard {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
   animation: fadeSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 

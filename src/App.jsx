@@ -56,39 +56,69 @@ function App() {
 
   return (
     <div className={styles.appWrapper}>
-      <header className={styles.header}>
+      {/* Sidebar */}
+      <aside className={`glass-panel ${styles.sidebar}`}>
         <div className={styles.logoGroup}>
           <div className={styles.fluidIcon}></div>
-          <h1>Trusta<span>Guard</span></h1>
-        </div>
-        <div className={styles.subtitle}>Fluid AI Fraud Prevention</div>
-      </header>
-
-      <main className={styles.bentoGrid}>
-        <div className={styles.bentoHeader}>
-          <DashboardStats />
-        </div>
-
-        <div className={styles.bentoLeft}>
-          <TransactionForm onSubmit={handleTransactionSubmit} disabled={isProcessing} />
+          <h2>TrustaGuard</h2>
         </div>
         
-        <div className={styles.bentoRight}>
-          <div className={styles.bentoLogs}>
-            <AgentLogs logs={logs} isThinking={isProcessing} />
+        <nav className={styles.navMenu}>
+          <a href="#" className={styles.activeNavItem}>
+            <span className={styles.navIcon}>⊞</span> Dashboard
+          </a>
+          <a href="#">
+            <span className={styles.navIcon}>💳</span> Transactions
+          </a>
+          <a href="#">
+            <span className={styles.navIcon}>📋</span> Live Logs
+          </a>
+          <a href="#">
+            <span className={styles.navIcon}>📈</span> Analytics
+          </a>
+          <a href="#" className={styles.settingsLink}>
+            <span className={styles.navIcon}>⚙️</span> Settings
+          </a>
+        </nav>
+      </aside>
+
+      <main className={styles.mainContent}>
+        {/* Top Header */}
+        <header className={styles.topHeader}>
+          <div className={styles.headerTitle}>
+            <h1>TrustaGuard AI: <span>Fraud Prevention</span> | <span className={styles.greeting}>Good Morning, Sarah J.</span></h1>
+          </div>
+          <div className={`glass-panel ${styles.threatBadge}`}>
+            <span className={styles.threatIcon}>🔔</span> 14 Active Threats
+          </div>
+        </header>
+
+        <div className={styles.bentoGrid}>
+          <div className={styles.bentoHeader}>
+            <DashboardStats />
+          </div>
+
+          <div className={styles.bentoLeft}>
+            <TransactionForm onSubmit={handleTransactionSubmit} disabled={isProcessing} />
           </div>
           
-          <div className={styles.bentoDecision}>
-            {decisionData && <RiskAnalysis decisionData={decisionData} />}
-            {!decisionData && !isProcessing && (
-              <div className={`glass-panel ${styles.waitingState}`}>
-                <div className={styles.auroraEffect}></div>
-                <div className={styles.waitingContent}>
-                  <div className={styles.ripplePulse}></div>
-                  <span>System ready. Awaiting transaction data...</span>
+          <div className={styles.bentoRight}>
+            <div className={styles.bentoLogs}>
+              <AgentLogs logs={logs} isThinking={isProcessing} />
+            </div>
+            
+            <div className={styles.bentoDecision}>
+              {decisionData && <RiskAnalysis decisionData={decisionData} />}
+              {!decisionData && !isProcessing && (
+                <div className={`glass-panel ${styles.waitingState}`}>
+                  <div className={styles.auroraEffect}></div>
+                  <div className={styles.waitingContent}>
+                     <div className={styles.ripplePulse}></div>
+                     <span>System ready. Awaiting transaction data...</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </main>

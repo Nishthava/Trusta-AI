@@ -1,31 +1,29 @@
 .appWrapper {
-  max-width: 1560px;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 40px 32px;
+  padding: 24px;
   display: flex;
-  flex-direction: column;
   gap: 32px;
+  min-height: 100vh;
 }
 
-.header {
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  border-radius: 20px;
+  padding: 32px 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 16px;
-  text-align: center;
-  animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  position: sticky;
+  top: 24px;
+  height: calc(100vh - 48px);
 }
 
 .logoGroup {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  margin-bottom: 48px;
 }
 
 .fluidIcon {
@@ -42,33 +40,103 @@
   100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(360deg); }
 }
 
-.header h1 {
-  font-size: 2.8rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+.logoGroup h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
   color: var(--text-primary);
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  letter-spacing: -0.02em;
 }
 
-.header h1 span {
-  background: linear-gradient(90deg, var(--accent-pink), var(--accent-purple));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.navMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
 }
 
-.subtitle {
+.navMenu a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
   color: var(--text-secondary);
-  font-family: var(--font-mono);
+  text-decoration: none;
   font-size: 0.95rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 500;
+  transition: all var(--transition-fast);
 }
 
+.navMenu a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.activeNavItem {
+  background: rgba(15, 240, 252, 0.1) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(15, 240, 252, 0.2);
+}
+
+.navIcon {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+.settingsLink {
+  margin-top: auto;
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Top Header */
+.topHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px 16px 16px;
+}
+
+.headerTitle h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.headerTitle h1 span {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.greeting {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.threatBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: rgba(255, 42, 42, 0.06);
+  border: 1px solid rgba(255, 42, 42, 0.3);
+  color: #ff4d4d;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Bento Grid */
 .bentoGrid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 28px;
+  gap: 20px;
 }
 
 .bentoHeader {
@@ -76,16 +144,16 @@
 }
 
 .bentoLeft {
-  grid-column: span 5;
+  grid-column: span 6;
   display: flex;
   flex-direction: column;
 }
 
 .bentoRight {
-  grid-column: span 7;
+  grid-column: span 6;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 20px;
 }
 
 .bentoLogs {
@@ -107,17 +175,16 @@
   text-align: center;
   font-family: var(--font-mono);
   color: var(--text-muted);
-  border: 1px solid var(--border-glass);
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 20px;
 }
 
 .auroraEffect {
   position: absolute;
   top: 50%; left: 50%;
   width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(15, 240, 252, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
   transform: translate(-50%, -50%);
   animation: pulseWait 4s ease-in-out infinite alternate;
   pointer-events: none;
@@ -149,7 +216,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(139, 92, 246, 0.4);
   animation: ripple 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
@@ -159,6 +226,15 @@
 }
 
 @media (max-width: 1024px) {
+  .appWrapper {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    top: 0;
+  }
   .bentoLeft, .bentoRight {
     grid-column: span 12;
   }

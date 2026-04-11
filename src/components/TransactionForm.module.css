@@ -48,23 +48,22 @@
 
 .inputGroup input,
 .inputGroup select {
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: var(--bg-input);
-  border: 1px solid transparent;
-  border-bottom: 2px solid var(--border-glass-light);
+  border: 1px solid var(--border-glass);
   color: var(--text-primary);
   outline: none;
-  border-radius: 16px;
+  border-radius: 12px;
   transition: all var(--transition-normal);
-  font-family: var(--font-mono);
-  font-size: 1.1rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
 }
 
 .inputGroup input:focus,
 .inputGroup select:focus {
-  border-bottom: 2px solid var(--accent-cyan);
+  border: 1px solid var(--accent-cyan);
   background: rgba(15, 240, 252, 0.05);
-  box-shadow: 0 10px 30px -10px rgba(15, 240, 252, 0.3);
+  box-shadow: 0 0 15px rgba(15, 240, 252, 0.1) inset, 0 0 20px rgba(15, 240, 252, 0.1);
   transform: translateY(-2px);
 }
 

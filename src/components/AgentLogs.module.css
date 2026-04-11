@@ -112,7 +112,9 @@
 }
 
 .message {
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  line-height: 1.5;
 }
 
 .info .message { color: var(--text-primary); text-shadow: 0 0 5px rgba(255, 255, 255, 0.15); }
