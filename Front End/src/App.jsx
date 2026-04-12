@@ -18,6 +18,8 @@ function App() {
 
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleTransactionSubmit = async (formData) => {
     setLogs([]);
     setDecisionData(null);
@@ -39,6 +41,31 @@ function App() {
 
     addLog(`Computation complete. Risk index generated.`, 'success');
     await delay(500);
+
+    // ── Send to Railway backend (save to DB) ──
+    try {
+      addLog(`Syncing with Trusta AI backend...`, 'info');
+      const response = await fetch(`${API_URL}/api/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          txn_id: `TXN-${Date.now()}`,
+          sender_id: formData.senderUPI,
+          receiver_id: formData.receiverUPI,
+          amount: parseFloat(formData.amount),
+          device_id: formData.isNewDevice ? 'NEW_DEVICE' : 'TRUSTED_DEVICE',
+          is_new_receiver: formData.isReceiverNew || false,
+          time: new Date().getHours(),
+        }),
+      });
+      if (response.ok) {
+        addLog(`Backend sync successful — transaction logged.`, 'success');
+      } else {
+        addLog(`Backend responded with status ${response.status}.`, 'info');
+      }
+    } catch {
+      addLog(`Backend sync skipped (offline mode).`, 'info');
+    }
 
     setDecisionData({
       riskScore: result.riskScore,
