@@ -1,0 +1,168 @@
+.formContainer {
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inputGroup label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color var(--transition-fast);
+}
+
+.inputGroup:focus-within label {
+  color: var(--text-primary);
+}
+
+.inputGroup input,
+.inputGroup select {
+  padding: 14px 18px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  outline: none;
+  border-radius: 12px;
+  transition: all var(--transition-normal);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.inputGroup input:focus,
+.inputGroup select:focus {
+  border: 1px solid var(--accent-cyan);
+  background: rgba(15, 240, 252, 0.05);
+  box-shadow: 0 0 15px rgba(15, 240, 252, 0.1) inset, 0 0 20px rgba(15, 240, 252, 0.1);
+  transform: translateY(-2px);
+}
+
+.inputGroup input:disabled,
+.inputGroup select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid var(--border-glass);
+  transition: background var(--transition-normal);
+}
+
+.grid2:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  accent-color: var(--accent-purple);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.checkboxGroup:hover input[type="checkbox"] {
+  transform: scale(1.1);
+}
+
+.checkboxGroup label {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.checkboxGroup:hover label {
+  color: var(--text-primary);
+}
+
+.submitBtn {
+  margin-top: 24px;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.submitBtn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(135deg, var(--accent-pink) 0%, var(--accent-cyan) 100%);
+  z-index: -1;
+  transition: opacity var(--transition-normal);
+  opacity: 0;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(244, 44, 191, 0.5);
+}
+
+.submitBtn:hover:not(:disabled)::before {
+  opacity: 1;
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.submitBtn:disabled {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  border: 1px solid var(--border-glass);
+}
