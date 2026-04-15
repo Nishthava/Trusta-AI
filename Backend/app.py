@@ -13,6 +13,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 🔥 allow all (for now)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(transaction_router, prefix="/api")
 
 @app.get("/")
