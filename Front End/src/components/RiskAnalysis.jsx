@@ -28,7 +28,7 @@ const RiskAnalysis = ({ decisionData }) => {
   if (!decisionData) return null;
   const { riskScore, reasoning, decision } = decisionData;
 
-  const statusColor = decision === 'ALLOW' ? 'green' : decision === 'OTP' ? 'amber' : 'red';
+  const statusColor = decision === 'ALLOW' ? 'green' : decision === 'WARN' ? 'amber' : 'red';
 
   return (
     <div className={`${styles.container} ${styles.visible}`}>
@@ -65,7 +65,7 @@ const RiskAnalysis = ({ decisionData }) => {
 
         {/* Factor rows */}
         <div className={styles.factors}>
-          {reasoning.map((item, idx) => (
+          {(reasoning || []).map((item, idx) => (
             <div key={idx} className={styles.factorRow}>
               <div className={`${styles.factorDot} ${styles[item.type === 'danger' ? 'red' : item.type === 'warning' ? 'amber' : 'green']}`}></div>
               <div className={styles.factorText}>{item.message}</div>

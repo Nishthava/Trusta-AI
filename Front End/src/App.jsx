@@ -3,7 +3,7 @@ import TransactionForm from './components/TransactionForm';
 import AgentLogs from './components/AgentLogs';
 import RiskAnalysis from './components/RiskAnalysis';
 import DashboardStats from './components/DashboardStats';
-import { calculateRisk } from './utils/riskEngine';
+
 import styles from './App.module.css';
 
 function App() {
@@ -18,64 +18,44 @@ function App() {
 
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = "http://127.0.0.1:8000";
 
-  const handleTransactionSubmit = async (formData) => {
-    setLogs([]);
-    setDecisionData(null);
-    setIsProcessing(true);
+  const handleTransactionSubmit = async (data) => {
+  setLogs([]);
+  setDecisionData(null);
+  setIsProcessing(true);
 
-    addLog(`INITIALIZING AGENT TRIDENT...`, 'info');
-    await delay(600);
-    addLog(`Intercepted transaction request from ${formData.senderUPI} to ${formData.receiverUPI}.`, 'info');
-    await delay(1000);
-    addLog(`Analyzing transaction parameters...`, 'info');
-    await delay(800);
+  addLog(`INITIALIZING AGENT TRIDENT...`, 'info');
+  await delay(600);
 
-    const result = calculateRisk(formData);
+  addLog(`Intercepted transaction request...`, 'info');
+  await delay(1000);
 
-    for (const logic of result.reasoning) {
-      addLog(`Evaluating parameter: ${logic.message}`, logic.type === 'danger' ? 'danger' : 'info');
-      await delay(900);
-    }
+  addLog(`Analyzing transaction parameters...`, 'info');
+  await delay(800);
 
-    addLog(`Computation complete. Risk index generated.`, 'success');
-    await delay(500);
+  for (const logic of data.reasons || []) {
+    addLog(
+      `Evaluating parameter: ${logic.message}`,
+      logic.type === 'danger' ? 'danger' : 'info'
+    );
+    await delay(900);
+  }
 
-    // ── Send to Railway backend (save to DB) ──
-    try {
-      addLog(`Syncing with Trusta AI backend...`, 'info');
-      const response = await fetch(`${API_URL}/api/analyze`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          txn_id: `TXN-${Date.now()}`,
-          sender_id: formData.senderUPI,
-          receiver_id: formData.receiverUPI,
-          amount: parseFloat(formData.amount),
-          device_id: formData.isNewDevice ? 'NEW_DEVICE' : 'TRUSTED_DEVICE',
-          is_new_receiver: formData.isReceiverNew || false,
-          time: new Date().getHours(),
-        }),
-      });
-      if (response.ok) {
-        addLog(`Backend sync successful — transaction logged.`, 'success');
-      } else {
-        addLog(`Backend responded with status ${response.status}.`, 'info');
-      }
-    } catch {
-      addLog(`Backend sync skipped (offline mode).`, 'info');
-    }
+  addLog(`Computation complete. Risk index generated.`, 'success');
+  await delay(500);
 
-    setDecisionData({
-      riskScore: result.riskScore,
-      decision: result.decision,
-      reasoning: result.reasoning,
-      flags: result.flags,
-    });
-    setIsProcessing(false);
-  };
+  addLog('Backend handled automatically via form submission.', 'info');
 
+  setDecisionData({
+    riskScore: data.risk_score,
+    decision: data.status,
+    reasoning: data.reasons || [],
+    flags: data.auto_flags || {},
+  });
+
+  setIsProcessing(false);
+};
   return (
     <div className={styles.appWrapper}>
 
@@ -123,6 +103,6 @@ function App() {
       </main>
     </div>
   );
-}
 
+}
 export default App;
