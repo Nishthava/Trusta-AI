@@ -4,23 +4,29 @@ def calculate_risk(txn: dict):
 
     if txn["amount"] > 10000:
         score += 20
-        reasons.append("High amount")
+        reasons.append({"message": "High amount", "type": "danger"})
 
     if txn["is_new_receiver"]:
         score += 30
-        reasons.append("Unknown receiver")
+        reasons.append({"message": "High amount", "type": "danger"})
 
-    if 0 <= txn["time"] <= 5:
-        score += 10
-        reasons.append("Odd hour transaction")
+    txn_count = txn.get("txn_count", 0)
+
+    if txn_count > 10:
+     score += 20
+     reasons.append({"message": "High incoming transaction count", "type": "warning"})
+
+    if txn_count > 20:
+     score += 30
+    reasons.append({"message": "High incoming transaction count", "type": "warning"})
 
     # Additional heuristics
     if txn["amount"] > 50000:
         score += 20
-        reasons.append("Extremely high amount")
+        reasons.append({"message": "High incoming transaction count", "type": "warning"})
 
     if txn["sender_id"] == txn["receiver_id"]:
         score += 10
-        reasons.append("Sender and receiver are the same")
+        reasons.append({"message": "High incoming transaction count", "type": "warning"})
 
     return score, reasons

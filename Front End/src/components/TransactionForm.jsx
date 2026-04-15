@@ -3,12 +3,9 @@ import styles from './TransactionForm.module.css';
 
 const TransactionForm = ({ onSubmit, disabled }) => {
   const [formData, setFormData] = useState({
-    amount: '',
-    senderUPI: 'user@okaxis',
-    receiverUPI: '',
-    isNewDevice: false,
-    locationMatches: true,
-  });
+  amount: '',
+  receiverUPI: '',
+});
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -18,10 +15,33 @@ const TransactionForm = ({ onSubmit, disabled }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    console.log("UPI:", formData.receiverUPI);
+    const response = await fetch("http://127.0.0.1:8000/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        txn_id: "T" + Date.now(),
+        receiver_upi: formData.receiverUPI,
+        amount: Number(formData.amount)
+      })
+    });
+
+    const data = await response.json();
+
+    console.log("Response:", data);
+
+    onSubmit(data); // send result to parent
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
 
   return (
     <div className={`glass-panel ${styles.formContainer}`}>
@@ -57,58 +77,6 @@ const TransactionForm = ({ onSubmit, disabled }) => {
           />
         </div>
 
-        <div className={styles.grid2}>
-          <div className={styles.checkboxGroup}>
-            <input
-              type="checkbox"
-              id="isReceiverNew"
-              name="isReceiverNew"
-              checked={formData.isReceiverNew}
-              onChange={handleChange}
-              disabled={disabled}
-            />
-            <label htmlFor="isReceiverNew">New Receiver</label>
-          </div>
-
-          <div className={styles.checkboxGroup}>
-            <input
-              type="checkbox"
-              id="isNewDevice"
-              name="isNewDevice"
-              checked={formData.isNewDevice}
-              onChange={handleChange}
-              disabled={disabled}
-            />
-            <label htmlFor="isNewDevice">New Device</label>
-          </div>
-
-          <div className={styles.checkboxGroup}>
-            <input
-              type="checkbox"
-              id="isLocationChanged"
-              name="isLocationChanged"
-              checked={formData.isLocationChanged}
-              onChange={handleChange}
-              disabled={disabled}
-            />
-            <label htmlFor="isLocationChanged">Location Changed</label>
-          </div>
-        </div>
-
-        <div className={styles.inputGroup}>
-          <label htmlFor="frequency">Recent Transaction Frequency</label>
-          <select
-            id="frequency"
-            name="frequency"
-            value={formData.frequency}
-            onChange={handleChange}
-            disabled={disabled}
-          >
-            <option value="low">Low (1-2 today)</option>
-            <option value="medium">Medium (3-5 today)</option>
-            <option value="high">High (&gt;5 today)</option>
-          </select>
-        </div>
 
         <button 
           type="submit" 
