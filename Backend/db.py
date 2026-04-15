@@ -1,11 +1,12 @@
-import os
-import mysql.connector
+import psycopg2
 
 def get_db_connection():
-    return mysql.connector.connect(
-        host=os.environ.get("DB_HOST", "localhost"),
-        user=os.environ.get("DB_USER", "root"),
-        password=os.environ.get("DB_PASSWORD", "shrashty@123"),
-        database=os.environ.get("DB_NAME", "Trusta"),
-        port=int(os.environ.get("DB_PORT", 3306))
+    conn = psycopg2.connect(
+        host="aws-1-ap-northeast-2.pooler.supabase.com",
+        database="postgres",
+        user="postgres.ynbgjkskgubxaiotrtjb",
+        password="shrashty@123",
+        port=5432,
+        sslmode="require"   
     )
+    return conn
