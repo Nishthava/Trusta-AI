@@ -18,7 +18,7 @@ function App() {
 
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
-  const API_URL = "http://127.0.0.1:8000";
+  const API_URL = "https://melodious-adventure-production.up.railway.app";
 
   const handleTransactionSubmit = async (data) => {
   setLogs([]);
