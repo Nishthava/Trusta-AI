@@ -18,7 +18,7 @@ function App() {
 
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
-  const API_URL = "https://melodious-adventure-production.up.railway.app";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleTransactionSubmit = async (data) => {
   setLogs([]);
